@@ -17,9 +17,9 @@ function startRouter(store) {
   // update state on url change
   let router = new Router();
   router.on(baseUrl + "/(\\d+)/(\\d+)/(\\d+)", (row, col, page) =>
-    store.setView(+row, +col, +page));
+    store.setCoreView(+row, +col, +page));
   router.configure({
-    notfound: () => store.setView(6, 6, 1),
+    notfound: () => store.setLandingView(),
     html5history: true
   });
   router.init();
