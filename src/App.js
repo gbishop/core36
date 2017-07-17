@@ -1,57 +1,81 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import logo from './logo.svg';
 import './App.css';
 
-function simpleFetch(url) {
-    return new Promise((resolve, reject) => {
-        window.fetch(url)
-            .then(res => {
-                if (res.ok) {
-                    res.json().then(resolve).catch(reject);
-                } else {
-                    reject(res);
-                }
-            })
-            .catch(reject);
-    });
-}
+var words = [
+  'like',
+  'want',
+  'get',
+  'make',
+  'good',
+  'more',
+  'not',
+  'go',
+  'look',
+  'turn',
+  'help',
+  'different',
+  'I',
+  'he',
+  'open',
+  'do',
+  'put',
+  'same',
+  'you',
+  'she',
+  'that',
+  'up',
+  'all',
+  'some',
+  'it',
+  'here',
+  'in',
+  'on',
+  'can',
+  'finish',
+  'where',
+  'what',
+  'why',
+  'who',
+  'when',
+  'stop'
+];
+console.log(words);
 
 class App extends Component {
-  fetchCount(path) {
-    simpleFetch(path)
-      .then((data) => {
-        console.log('data', data);
-        this.props.counter.setCount(data.value);
-      })
-      .catch(err => {
-        console.log('error', err);
-      });
-  }
   render() {
-    const {counter} = this.props;
+    const store = this.props.store;
+    var perpage = store.rows * store.cols;
+    var npages = Math.ceil(words.length / perpage);
+    console.log('npages', npages);
+    var offset = (store.page - 1) * perpage;
+    var symbols = [];
+    var showback = store.page > 1 ? 1 : 0;
+    var shownext = store.page <= npages ? 1 : 0;
+    var w = 100 / store.cols;
+    var h = 100 / store.rows;
+    var style = { width: `${w}%`, height: `${h}%` };
+    for (var r = 0; r < store.rows; r++) {
+      for (var c = 0; c < store.cols; c++) {
+        var i = r * store.cols + c + offset;
+        if (i < words.length) {
+          symbols.push(
+            <button key={words[i]} className="symbol" style={style}>
+              <div>
+                <h1>{words[i]}</h1>
+                <img src={process.env.PUBLIC_URL + `/symbols/${words[i]}.png`} alt={words[i]} />
+              </div>
+            </button>);
+        }
+      }
+    }
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React + mobx + routing</h2>
+        {showback>0 && <button className="nav" >Back</button>}
+        <div className="symbols">
+          {symbols}
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Counter:
-          <span className={counter.isOdd ? 'Counter-odd' : 'Counter-even'}> {counter.count} </span>
-        </p>
-        <p>
-          <button onClick={counter.increment}> + </button>
-          <button onClick={counter.decrement}> - </button>
-        </p>
-        <p>
-          <button onClick={() => this.fetchCount('/api/count.json')}>
-          fetch
-          </button>
-        </p>
+        {shownext>0 && <button className="nav" >Next</button>}
       </div>
     );
   }

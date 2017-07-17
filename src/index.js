@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Counter from './Counter';
+import Store from './Store';
 import App from './App';
-import registerServiceWorker from './registerServiceWorker';
+// import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 // https://github.com/flatiron/director/issues/349 explains
 // why I need the strange path.
@@ -16,10 +16,10 @@ function startRouter(store) {
 
   // update state on url change
   let router = new Router();
-  router.on(baseUrl + "/(\\d+)", value => store.setCount(+value));
-  router.on(baseUrl + "/", () => store.setCount(0));
+  router.on(baseUrl + "/(\\d+)/(\\d+)/(\\d+)", (row, col, page) =>
+    store.setView(+row, +col, +page));
   router.configure({
-    notfound: () => store.setCount(-1),
+    notfound: () => store.setView(6, 6, 1),
     html5history: true
   });
   router.init();
@@ -34,12 +34,12 @@ function startRouter(store) {
   })
 
 }
-const store = new Counter();
+const store = new Store();
 
 startRouter(store);
 
 ReactDOM.render(
-  <App counter={store} />, 
+  <App store={store} />, 
   document.getElementById('root')
 );
-registerServiceWorker();
+// registerServiceWorker();
